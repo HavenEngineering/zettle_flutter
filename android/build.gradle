@@ -44,7 +44,7 @@ android {
 
 dependencies {
     // Core always needed
-    implementation "com.zettle.sdk:core:2.24.2"
+    implementation "com.zettle.sdk:core:2.38.2"
     // For Card Reader Payments
-    implementation "com.zettle.sdk.feature.cardreader:ui:2.24.2"
+    implementation "com.zettle.sdk.feature.cardreader:ui:2.38.2"
 }
