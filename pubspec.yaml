@@ -1,12 +1,12 @@
 name: zettle
 description: A wrapper for the Zettle POS SDK for Android and iOS. Includes support for charging and refunding.
-version: 0.2.12
+version: 0.2.13
 repository: https://github.com/ovatu/zettle_flutter
 homepage: https://ovatu.com/us
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: '>=3.1.1 <4.0.0'
+  sdk: ">=3.9.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -15,7 +15,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
