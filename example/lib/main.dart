@@ -64,6 +64,7 @@ class _ZettleExamplePageState extends State<ZettleExamplePage> {
   String? _lastPaymentReference;
 
   void _log(String action, String message, {bool isError = false}) {
+    if (!context.mounted) return;
     setState(() {
       _logs.insert(
         0,
@@ -84,7 +85,9 @@ class _ZettleExamplePageState extends State<ZettleExamplePage> {
     } catch (e) {
       _log(label, e.toString(), isError: true);
     } finally {
-      setState(() => _loading = false);
+      if (context.mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
