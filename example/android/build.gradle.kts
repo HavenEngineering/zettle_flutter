@@ -1,3 +1,11 @@
+val githubToken: String = providers.environmentVariable("GITHUB_TOKEN").orNull
+    ?: throw GradleException(
+        "GITHUB_TOKEN environment variable is not set. " +
+        "A GitHub personal access token with read:packages scope is required " +
+        "to resolve the Zettle SDK from GitHub Packages. " +
+        "See https://github.com/iZettle/sdk-android for details."
+    )
+
 allprojects {
     repositories {
         google()
@@ -6,7 +14,7 @@ allprojects {
             url = uri("https://maven.pkg.github.com/iZettle/sdk-android")
             credentials(HttpHeaderCredentials::class) {
                 name = "Authorization"
-                value = "Bearer ${providers.environmentVariable("GITHUB_TOKEN").getOrElse("")}"
+                value = "Bearer $githubToken"
             }
             authentication {
                 create<HttpHeaderAuthentication>("header")
