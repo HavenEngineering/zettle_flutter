@@ -2,6 +2,16 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://maven.pkg.github.com/iZettle/sdk-android")
+            credentials(HttpHeaderCredentials::class) {
+                name = "Authorization"
+                value = "Bearer ${providers.environmentVariable("GITHUB_TOKEN").getOrElse("")}"
+            }
+            authentication {
+                create<HttpHeaderAuthentication>("header")
+            }
+        }
     }
 }
 
