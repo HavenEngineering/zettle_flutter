@@ -16,8 +16,8 @@ Zettle.init(iosClientId, androidClientId, redirectUrl);
 ## Prerequisites
 
 1) Registered for a Zettle developer account via [Zettle](https://developer.zettle.com/).
-2) Deployment Target iOS 12.0 or higher.
-3) Android minSdkVersion 21 or higher.
+2) Deployment Target iOS 16.0 or higher.
+3) Android minSdkVersion 23 or higher.
 
 ## Android
 

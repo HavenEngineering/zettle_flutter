@@ -1,3 +1,16 @@
+## 0.3.0
+
+* Bump Flutter SDK minimum to 3.41.4
+* Raise iOS deployment target to 16.0
+* Raise Android minSdkVersion to 23
+* Migrate example Android build scripts to Kotlin DSL
+* Remove duplicate Groovy build scripts from example
+* Fail fast with a clear error when GITHUB_TOKEN is missing
+* Replace project-specific identifiers in example app config
+* Add mounted guards to prevent setState-after-dispose
+* Update widget tests for the new example app UI
+* Update README prerequisites to match actual minimum versions
+
 ## 0.2.12
 
 * Bump zettle SDK version 2.24.2
