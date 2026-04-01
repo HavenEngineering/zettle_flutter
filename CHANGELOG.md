@@ -1,4 +1,4 @@
-## 0.2.13
+## 0.2.14
 
 * Fix Android onActivityResult to handle non-OK result codes instead of silently returning false
 * Include failure reason and error details in payment and refund failed results
