@@ -1,3 +1,10 @@
+## 0.2.14
+
+* Fix Android onActivityResult to handle non-OK result codes instead of silently returning false
+* Include failure reason and error details in payment and refund failed results
+* Handle unknown/unmatched ZettleResult types with explicit error messages
+* Add Settings task handling in onActivityResult
+
 ## 0.2.12
 
 * Bump zettle SDK version 2.24.2
