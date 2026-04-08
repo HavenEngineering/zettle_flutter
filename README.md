@@ -1,36 +1,32 @@
 # Zettle POS SDK for Flutter
 
-[![pub package](https://img.shields.io/pub/v/zettle.svg)](https://pub.dev/packages/zettle) [![likes](https://badges.bar/zettle/likes)](https://pub.dev/packages/zettle/score) [![popularity](https://badges.bar/zettle/popularity)](https://pub.dev/packages/zettle/score)  [![pub points](https://badges.bar/zettle/pub%20points)](https://pub.dev/packages/zettle/score)
+[![pub package](https://img.shields.io/pub/v/zettle.svg)](https://pub.dev/packages/zettle)
 
-A Flutter wrapper to use the Zettle POS SDK.
-
-With this plugin, your app can easily request payment via the Zettle readers on Android and iOS.
-
-## Note ⚠️
-You Must Call the init function Only once a time in your app
-
-```dart
-Zettle.init(iosClientId, androidClientId, redirectUrl);
-```
+A Flutter wrapper for the [Zettle POS SDK](https://developer.zettle.com/) on Android and iOS. Supports card payments, refunds, session management, and card reader settings.
 
 ## Prerequisites
+
+1. A [Zettle developer account](https://developer.zettle.com/).
+2. iOS 12.0 or higher.
+3. Android minSdkVersion 23 or higher.
+
+## Installing
+
+Add zettle to your `pubspec.yaml`:
 
 1) Registered for a Zettle developer account via [Zettle](https://developer.zettle.com/).
 2) Deployment Target iOS 16.0 or higher.
 3) Android minSdkVersion 23 or higher.
 
-## Android
-
-Add to build.gradle (as per https://github.com/iZettle/sdk-android)
-Add your personal access token to build.gradle (as per https://github.com/iZettle/sdk-android), this is used to access the Zettle maven repo on github
-
+```dart
+import 'package:zettle/zettle.dart';
 ```
-android {
-    packagingOptions {
-        exclude 'META-INF/*.kotlin_module'
-    }
-}
 
+## Android setup
+
+Add the Zettle GitHub Packages Maven repository to your **root** `build.gradle` (see [sdk-android](https://github.com/iZettle/sdk-android)):
+
+```groovy
 allprojects {
     repositories {
         google()
@@ -39,7 +35,7 @@ allprojects {
             url = uri("https://maven.pkg.github.com/iZettle/sdk-android")
             credentials(HttpHeaderCredentials) {
                 name "Authorization"
-                value "Bearer <YOUR TOKEN HERE>"
+                value "Bearer <YOUR GITHUB TOKEN>"
             }
             authentication {
                 header(HttpHeaderAuthentication)
@@ -49,9 +45,9 @@ allprojects {
 }
 ```
 
-Add to manifest (as per https://github.com/iZettle/sdk-android)
+Add the OAuth callback activity to your `AndroidManifest.xml`:
 
-```
+```xml
 <activity
     android:name="com.izettle.android.auth.OAuthActivity"
     android:launchMode="singleTask"
@@ -59,8 +55,8 @@ Add to manifest (as per https://github.com/iZettle/sdk-android)
     android:exported="true">
     <intent-filter>
         <data
-            android:host="[redirect url host]"
-            android:scheme="[redirect url scheme]" />
+            android:host="<redirect url host>"
+            android:scheme="<redirect url scheme>" />
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
@@ -68,22 +64,16 @@ Add to manifest (as per https://github.com/iZettle/sdk-android)
 </activity>
 ```
 
+## iOS setup
 
+Add the following to your `Info.plist` (see [sdk-ios](https://github.com/iZettle/sdk-ios)):
 
-## iOS
-
-Add reader protocol to info.plist (https://github.com/iZettle/sdk-ios)
-
-```
+```xml
 <key>UISupportedExternalAccessoryProtocols</key>
 <array>
     <string>com.izettle.cardreader-one</string>
 </array>
-```
 
-Add elements to info.plist (https://github.com/iZettle/sdk-ios)
-
-```
 <key>UIBackgroundModes</key>
 <array>
     <string>bluetooth-central</string>
@@ -103,7 +93,7 @@ Add elements to info.plist (https://github.com/iZettle/sdk-ios)
         <string>Editor</string>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>"The scheme of your OAuth Redirect URI *"</string>
+            <string><your OAuth redirect URI scheme></string>
         </array>
     </dict>
 </array>
@@ -112,50 +102,61 @@ Add elements to info.plist (https://github.com/iZettle/sdk-ios)
 <string>You need to allow this to be able to accept card payments</string>
 ```
 
+## Usage
 
-## Installing
+### Initialize the SDK
 
-Add zettle to your pubspec.yaml:
-
-```yaml
-dependencies:
-  zettle:
-```
-
-Import zettle:
+Call `init` once at app startup:
 
 ```dart
-import 'package:zettle/zettle.dart';
+await Zettle.init(iosClientId, androidClientId, redirectUrl);
 ```
 
-## Getting Started
-
-Init Zettle SDK:
+### Payments
 
 ```dart
-Zettle.init(iosClientId, androidClientId, redirectUrl);
+final response = await Zettle.requestPayment(
+  ZettlePaymentRequest(
+    amount: 10.00,
+    reference: 'unique-reference',
+    enableLogin: true,
+    enableTipping: false,
+    enableInstalments: false,
+  ),
+);
 ```
 
-Complete a transaction:
+### Refunds
 
 ```dart
-var request = ZettlePaymentRequest(
-        amount: 100,
-        reference: reference,
-        enableLogin: true,
-        enableTipping: false,
-        enableInstalments: false);
-        
-Zettle.requestPayment(request);
+final response = await Zettle.requestRefund(
+  ZettleRefundRequest(reference: 'payment-reference', refundAmount: 10.00),
+);
 ```
 
-## Available APIs
+### Session management
 
 ```dart
-Zettle.init(iosClientId, androidClientId, redirectUrl);
-
-bool Zettle.isInitialized;
-
-Zettle.requestPayment(request);
-Zettle.requestRefund(request);
+await Zettle.login();
+await Zettle.logout();
+final status = await Zettle.loggedIn();
 ```
+
+### Card reader settings
+
+```dart
+Zettle.showSettings();
+```
+
+## API reference
+
+| Method | Description |
+|---|---|
+| `Zettle.init(iosClientId, androidClientId, redirectUrl)` | Initialize the SDK (call once) |
+| `Zettle.isInitialized` | Whether the SDK has been initialized |
+| `Zettle.login()` | Trigger Zettle login |
+| `Zettle.logout()` | Log out the current session |
+| `Zettle.loggedIn()` | Check login status |
+| `Zettle.requestPayment(request)` | Start a card payment |
+| `Zettle.requestRefund(request)` | Start a refund |
+| `Zettle.showSettings()` | Open card reader settings |
