@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion Integer.parseInt(ANDROID_COMPILE_SDK)
     if (project.android.hasProperty("namespace")) {
         namespace "com.ovatu.zettle_example"
     }
@@ -43,9 +43,9 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.ovatu.zettle_example"
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        applicationId "com.bourne.teams.debug"
+        minSdkVersion Integer.parseInt(ANDROID_MIN_SDK)
+        targetSdkVersion Integer.parseInt(ANDROID_TARGET_SDK)
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -58,8 +58,10 @@ android {
         }
     }
 
-    packagingOptions {
-        exclude 'META-INF/*.kotlin_module'
+    packaging {
+        resources {
+            excludes += 'META-INF/*.kotlin_module'
+        }
     }
 }
 
