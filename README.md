@@ -148,6 +148,39 @@ final status = await Zettle.loggedIn();
 Zettle.showSettings();
 ```
 
+## Testing locally
+
+To run the example app on a device:
+
+1. **Set your GitHub token** in `example/android/build.gradle` to authenticate with the Zettle Maven repository:
+   ```groovy
+   value "Bearer <YOUR GITHUB TOKEN>"
+   ```
+
+2. **Set your application ID** in `example/android/app/build.gradle`:
+   ```groovy
+   applicationId "your.app.id"
+   ```
+
+3. **Set your OAuth redirect URL** in `example/android/app/src/main/AndroidManifest.xml`:
+   ```xml
+   <data
+       android:scheme="<your-redirect-scheme>"
+       android:host="<your-redirect-host>" />
+   ```
+   Note: `android:scheme` is the part before `://` and `android:host` is the part after. For example, `myapp://callback` would be `scheme="myapp"` and `host="callback"`.
+
+4. **Set your client IDs and redirect URL** in `example/lib/main.dart`:
+   ```dart
+   await Zettle.init("<ios-client-id>", "<android-client-id>", "<scheme>://<host>");
+   ```
+
+5. Run the example app:
+   ```bash
+   cd example
+   flutter run
+   ```
+
 ## API reference
 
 | Method | Description |
