@@ -1,3 +1,15 @@
+## 0.2.15
+
+* Bump Zettle SDK version to 2.42.5
+* Fix deprecated APIs and update Android build config (compileSdk 36, Java/Kotlin 17, minSdk 24)
+* Fix deprecated APIs and improve safety in iOS plugin (replace deprecated `UIApplication.shared.keyWindow`, remove force unwraps)
+* Update iOS deployment target to 16.0
+* Fix incorrect field labels in refund response `toString()`
+* Remove deprecated `package` attribute from AndroidManifest files
+* Replace deprecated `ActivityCompat.startActivityForResult` with `Activity.startActivityForResult`
+* Update example app with refund support and double-initialisation prevention
+* Update README with testing guidelines
+
 ## 0.2.14
 
 * Fix Android onActivityResult to handle non-OK result codes instead of silently returning false
