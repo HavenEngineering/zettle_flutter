@@ -44,6 +44,6 @@ class ZettlePluginRefundResponse {
 
   @override
   String toString() {
-    return 'Success: $status, originalAmount: $originalAmount, refundedAmount: $refundedAmount, cardType: $cardType, cardType: $maskedPan, cardType: $cardPaymentUUID';
+    return 'Success: $status, originalAmount: $originalAmount, refundedAmount: $refundedAmount, cardType: $cardType, maskedPan: $maskedPan, cardPaymentUUID: $cardPaymentUUID';
   }
 }
