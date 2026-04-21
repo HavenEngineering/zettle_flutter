@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'zettle'
-  s.version          = '0.2.14'
+  s.version          = '0.3.0'
   s.summary          = 'A new flutter plugin project.'
   s.description      = <<-DESC
 A new flutter plugin project.
