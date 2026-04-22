@@ -259,19 +259,10 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
      return true
    }
 
-   // Cancellation often comes with RESULT_CANCELED and null data
-   if (resultCode == Activity.RESULT_CANCELED && (data == null || data.extras == null)) {
-     currentOp.response.status = false
-     currentOp.response.message = mutableMapOf("status" to "canceled")
-     currentOp.flutterResult()
-     operations.remove(currentOp.response.methodName)
-     return true
-   }
-
    if (data == null || data.extras == null) {
      currentOp.response.status = false
      currentOp.response.message = mutableMapOf(
-             "status" to "failed",
+             "status" to if (resultCode == Activity.RESULT_CANCELED) "canceled" else "failed",
              "errors" to "No result data received (resultCode: $resultCode)"
      )
      currentOp.flutterResult()
