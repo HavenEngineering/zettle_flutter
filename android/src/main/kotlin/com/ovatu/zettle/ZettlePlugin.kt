@@ -25,7 +25,7 @@ import com.zettle.sdk.features.show
 import com.zettle.sdk.ui.ZettleResult
 import com.zettle.sdk.ui.zettleResult
 import com.zettle.sdk.ZettleSDK
-import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ProcessLifecycleOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -144,9 +144,7 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
 
       val sdk = ZettleSDK.configure(config)
       sdk.start()
-      (activity as? AppCompatActivity)?.let {
-        ZettleSDK.instance?.authState?.observe(it, authObserver)
-      }
+      ZettleSDK.instance?.authState?.observe(ProcessLifecycleOwner.get(), authObserver)
       sdkStarted = true
 
       currentOp.response.message = mutableMapOf("initialized" to true)

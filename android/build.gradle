@@ -47,4 +47,5 @@ dependencies {
     implementation "com.zettle.sdk:core:2.42.5"
     // For Card Reader Payments
     implementation "com.zettle.sdk.feature.cardreader:ui:2.42.5"
+    implementation "androidx.lifecycle:lifecycle-process:2.8.7"
 }
