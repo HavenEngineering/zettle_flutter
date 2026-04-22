@@ -152,10 +152,11 @@ Zettle.showSettings();
 
 To run the example app on a device:
 
-1. **Set your GitHub token** in `example/android/build.gradle.kts` to authenticate with the Zettle Maven repository:
-   ```kotlin
-   value = "Bearer <YOUR GITHUB TOKEN>"
+1. **Set the `GITHUB_TOKEN` environment variable** with a GitHub personal access token that has `read:packages` scope. This is required to download the Zettle SDK from GitHub Packages:
+   ```bash
+   export GITHUB_TOKEN=<your-github-pat>
    ```
+   Add this to your shell profile (`~/.zshrc` or `~/.bashrc`) to persist it. If using VSCode, restart it after setting the variable so Gradle inherits it.
 
 2. **Set your application ID** in `example/android/app/build.gradle.kts`:
    ```kotlin
