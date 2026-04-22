@@ -20,7 +20,11 @@
 * Remove deprecated `package` attribute from AndroidManifest files
 * Handle non-OK result codes and Settings task in Android `onActivityResult`
 * Include failure reason and error details in payment and refund failed results
-* Update README with testing guidelines
+* Fix authState observer not registering due to failed `AppCompatActivity` cast
+* Remove authState observer on plugin detachment to prevent leaks
+* Handle Settings and cancellation flows before null-data guard in `onActivityResult`
+* Configure example app via environment variables (no local file edits required)
+* Update README testing docs with environment variable setup
 
 ## 0.2.12
 
