@@ -80,6 +80,7 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
   override fun onDetachedFromActivity() {
     Log.d(tag, "onDetachedFromActivity")
     if (sdkStarted) {
+      ZettleSDK.instance?.authState?.removeObserver(authObserver)
       ZettleSDK.instance?.stop()
     }
   }
