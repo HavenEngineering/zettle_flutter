@@ -152,26 +152,16 @@ Zettle.showSettings();
 
 To run the example app on a device:
 
-1. **Set the `GITHUB_TOKEN` environment variable** with a GitHub personal access token that has `read:packages` scope. This is required to download the Zettle SDK from GitHub Packages:
+1. **Set the required environment variables** in your shell profile (`~/.zshrc` or `~/.bashrc`):
    ```bash
-   export GITHUB_TOKEN=<your-github-pat>
+   export GITHUB_TOKEN=<your-github-pat>          # read:packages scope, for Zettle Maven repo
+   export ZETTLE_APP_ID=<your.app.id>              # Android applicationId (optional, defaults to com.ovatu.zettle_example)
+   export ZETTLE_REDIRECT_SCHEME=<scheme>           # OAuth redirect scheme (e.g. myapp)
+   export ZETTLE_REDIRECT_HOST=<host>               # OAuth redirect host (e.g. callback)
    ```
-   Add this to your shell profile (`~/.zshrc` or `~/.bashrc`) to persist it. If using VSCode, restart it after setting the variable so Gradle inherits it.
+   If using VSCode, restart it after setting these so Gradle inherits them.
 
-2. **Set your application ID** in `example/android/app/build.gradle.kts`:
-   ```kotlin
-   applicationId = "your.app.id"
-   ```
-
-3. **Set your OAuth redirect URL** in `example/android/app/src/main/AndroidManifest.xml`:
-   ```xml
-   <data
-       android:scheme="<your-redirect-scheme>"
-       android:host="<your-redirect-host>" />
-   ```
-   Note: `android:scheme` is the part before `://` and `android:host` is the part after. For example, `myapp://callback` would be `scheme="myapp"` and `host="callback"`.
-
-4. **Set your client IDs and redirect URL** in `example/lib/main.dart` default values, or pass them via `--dart-define`:
+2. **Set your client IDs and redirect URL** in `example/lib/main.dart` default values, or pass them via `--dart-define`:
    ```bash
    flutter run \
      --dart-define=ZETTLE_IOS_CLIENT_ID=<ios-client-id> \
@@ -179,7 +169,7 @@ To run the example app on a device:
      --dart-define=ZETTLE_REDIRECT_URL=<scheme>://<host>
    ```
 
-5. Run the example app:
+3. Run the example app:
    ```bash
    cd example
    flutter run
