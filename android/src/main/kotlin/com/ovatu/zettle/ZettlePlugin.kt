@@ -250,6 +250,24 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
      return false
    }
 
+   // Settings doesn't return intent data — handle it before the null-data guard
+   if (task == ZettleTask.SETTINGS) {
+     currentOp.response.status = resultCode == Activity.RESULT_OK
+     currentOp.response.message = mutableMapOf("status" to if (resultCode == Activity.RESULT_OK) "completed" else "canceled")
+     currentOp.flutterResult()
+     operations.remove(currentOp.response.methodName)
+     return true
+   }
+
+   // Cancellation often comes with RESULT_CANCELED and null data
+   if (resultCode == Activity.RESULT_CANCELED && (data == null || data.extras == null)) {
+     currentOp.response.status = false
+     currentOp.response.message = mutableMapOf("status" to "canceled")
+     currentOp.flutterResult()
+     operations.remove(currentOp.response.methodName)
+     return true
+   }
+
    if (data == null || data.extras == null) {
      currentOp.response.status = false
      currentOp.response.message = mutableMapOf(
@@ -353,12 +371,7 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
        currentOp.flutterResult()
        operations.remove(currentOp.response.methodName)
      }
-     ZettleTask.SETTINGS -> {
-       currentOp.response.status = resultCode == Activity.RESULT_OK
-       currentOp.response.message = mutableMapOf("status" to if (resultCode == Activity.RESULT_OK) "completed" else "canceled")
-       currentOp.flutterResult()
-       operations.remove(currentOp.response.methodName)
-     }
+     else -> {}
    }
    return true
  }
