@@ -32,8 +32,8 @@
             android:taskAffinity="@string/oauth_activity_task_affinity" >
             <intent-filter>
                 <data
-                    android:host="login.callback"
-                    android:scheme="ovatu-next" />
+                    android:host="${redirectHost}"
+                    android:scheme="${redirectScheme}" />
 
                 <action android:name="android.intent.action.VIEW" />
 
