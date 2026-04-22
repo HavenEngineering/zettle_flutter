@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import androidx.annotation.NonNull
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.lifecycle.Observer
 import com.zettle.sdk.commons.state.StateObserver
 import com.zettle.sdk.config
@@ -26,7 +25,7 @@ import com.zettle.sdk.features.show
 import com.zettle.sdk.ui.ZettleResult
 import com.zettle.sdk.ui.zettleResult
 import com.zettle.sdk.ZettleSDK
-import io.flutter.embedding.android.FlutterActivity
+import androidx.lifecycle.ProcessLifecycleOwner
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -46,7 +45,7 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
-  private lateinit var activity: FlutterActivity
+  private lateinit var activity: Activity
 
   private var sdkStarted: Boolean = false
 
@@ -66,7 +65,7 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     Log.d(tag, "onAttachedToActivity")
-    activity = binding.activity as FlutterActivity
+    activity = binding.activity
     binding.addActivityResultListener(this)
   }
 
@@ -81,6 +80,7 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
   override fun onDetachedFromActivity() {
     Log.d(tag, "onDetachedFromActivity")
     if (sdkStarted) {
+      ZettleSDK.instance?.authState?.removeObserver(authObserver)
       ZettleSDK.instance?.stop()
     }
   }
@@ -145,7 +145,7 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
 
       val sdk = ZettleSDK.configure(config)
       sdk.start()
-      ZettleSDK.instance?.authState?.observe(activity, authObserver)
+      ZettleSDK.instance?.authState?.observe(ProcessLifecycleOwner.get(), authObserver)
       sdkStarted = true
 
       currentOp.response.message = mutableMapOf("initialized" to true)
@@ -205,7 +205,7 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
     val reference = TransactionReference.Builder(internalUniqueTraceId).build()
     val action = CardReaderAction.Payment(reference, (((args["amount"] as Double) * 100).toInt()).toLong(), TippingStyle.None)
     val intent = action.charge(activity)
-    startActivityForResult(activity, intent, ZettleTask.REQUEST_PAYMENT.code, null)
+    activity.startActivityForResult(intent, ZettleTask.REQUEST_PAYMENT.code)
   }
 
   private fun requestRefund(@NonNull args: Map<*, *>) {
@@ -220,7 +220,7 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
     val reference = TransactionReference.Builder(UUID.randomUUID().toString()).build()
     val action = CardReaderAction.Refund(reference, amount, internalUniqueTraceId)
     val intent = action.refund(activity)
-    startActivityForResult(activity, intent, ZettleTask.REQUEST_REFUND.code, null)
+    activity.startActivityForResult(intent, ZettleTask.REQUEST_REFUND.code)
   }
 
   private fun showSettings(): ZettlePluginResponseWrapper {
@@ -228,129 +228,143 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
 
     var action = CardReaderAction.Settings
     val intent = action.show(activity)
-    startActivityForResult(activity, intent, ZettleTask.SETTINGS.code, null)
+    activity.startActivityForResult(intent, ZettleTask.SETTINGS.code)
 
     return currentOp
   }
 
  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-   if (resultCode != Activity.RESULT_OK) {
-     return false
-   }
-
    Log.d(tag, "onActivityResult - RequestCode: $requestCode - Result Code: $resultCode")
 
-   Log.d(tag, "onActivityResult - operations: $operations")
+   val task = ZettleTask.valueOf(requestCode) ?: return false
 
-   val currentOp: ZettlePluginResponseWrapper? = when (ZettleTask.valueOf(requestCode)) {
+   val currentOp: ZettlePluginResponseWrapper? = when (task) {
      ZettleTask.REQUEST_PAYMENT -> operations["requestPayment"]
      ZettleTask.REQUEST_REFUND -> operations["requestRefund"]
-     else -> null
+     ZettleTask.SETTINGS -> operations["showSettings"]
    }
 
-   Log.d(tag, "onActivityResult - cuurent op: $currentOp")
+   Log.d(tag, "onActivityResult - current op: $currentOp")
 
    if (currentOp == null) {
      return false
    }
 
-   if (data != null && data.extras != null) {
-     val result = resultCode == Activity.RESULT_OK
-
-     currentOp.response.status = result
-
-     when (ZettleTask.valueOf(requestCode)) {
-       ZettleTask.REQUEST_PAYMENT -> {
-
-         when (val result: ZettleResult? = data?.zettleResult()) {
-           is ZettleResult.Completed<*> -> {
-             val paymentResult: CardPaymentResult.Completed = CardReaderAction.fromPaymentResult(result)
-             currentOp.response.status = true
-             currentOp.response.message = mutableMapOf(
-                     "status" to "completed",
-                     "amount" to paymentResult.payload.amount,
-                     "gratuityAmount" to paymentResult.payload.gratuityAmount,
-                     "cardType" to paymentResult.payload.cardType,
-                     "cardPaymentEntryMode" to paymentResult.payload.cardPaymentEntryMode,
-                     "cardholderVerificationMethod" to paymentResult.payload.cardholderVerificationMethod,
-                     "tsi" to paymentResult.payload.tsi,
-                     "tvr" to paymentResult.payload.tvr,
-                     "applicationIdentifier" to paymentResult.payload.applicationIdentifier,
-                     "cardIssuingBank" to paymentResult.payload.cardIssuingBank,
-                     "maskedPan" to paymentResult.payload.maskedPan,
-                     "panHash" to paymentResult.payload.panHash,
-                     "applicationName" to paymentResult.payload.applicationName,
-                     "authorizationCode" to paymentResult.payload.authorizationCode,
-                     "installmentAmount" to paymentResult.payload.installmentAmount,
-                     "nrOfInstallments" to paymentResult.payload.nrOfInstallments,
-                     "mxFiid" to paymentResult.payload.mxFiid,
-                     "mxCardType" to paymentResult.payload.mxCardType,
-                     "panHash" to paymentResult.payload.panHash,
-                     "reference" to paymentResult.payload.reference?.id,
-             )
-           }
-           is ZettleResult.Cancelled -> {
-             currentOp.response.status = false
-             currentOp.response.message = mutableMapOf(
-                     "status" to "canceled"
-             )
-           }
-           is ZettleResult.Failed -> {
-             currentOp.response.message = mutableMapOf(
-                     "status" to "failed",
-             )
-           }
-           else -> {}
-         }
-         currentOp.flutterResult()
-         operations.remove(currentOp.response.methodName)
-       }
-       ZettleTask.REQUEST_REFUND -> {
-
-         when (val result = data?.zettleResult()) {
-           is ZettleResult.Completed<*> -> {
-             currentOp.response.status = true
-             val refund : RefundResult.Completed = CardReaderAction.fromRefundResult(result)
-             currentOp.response.message = mutableMapOf(
-                     "status" to "completed",
-                     "originalAmount" to refund.payload.originalAmount,
-                     "refundedAmount" to refund.payload.refundedAmount,
-                     "cardType" to refund.payload.cardType,
-                     "maskedPan" to refund.payload.maskedPan,
-                     "cardPaymentUUID" to refund.payload.cardPaymentUUID,
-             )
-           }
-           is ZettleResult.Cancelled -> {
-             currentOp.response.status = false
-             currentOp.response.message = mutableMapOf(
-                     "status" to "canceled"
-             )
-           }
-           is ZettleResult.Failed -> {
-             currentOp.response.status = false
-             currentOp.response.message = mutableMapOf(
-                     "status" to "failed",
-             )
-           }
-           else -> {}
-         }
-         currentOp.flutterResult()
-         operations.remove(currentOp.response.methodName)
-       }
-       else -> {
-         currentOp.response.message = mutableMapOf("errors" to "Intent Data and/or Extras are null or empty")
-         currentOp.response.status = false
-         currentOp.flutterResult()
-         operations.remove(currentOp.response.methodName)
-       }
-     }
-   } else {
-     currentOp.response.message = mutableMapOf("errors" to "Intent Data and/or Extras are null or empty")
-     currentOp.response.status = false
+   // Settings doesn't return intent data — handle it before the null-data guard
+   if (task == ZettleTask.SETTINGS) {
+     currentOp.response.status = resultCode == Activity.RESULT_OK
+     currentOp.response.message = mutableMapOf("status" to if (resultCode == Activity.RESULT_OK) "completed" else "canceled")
      currentOp.flutterResult()
      operations.remove(currentOp.response.methodName)
+     return true
    }
-   return currentOp.response.status
+
+   if (data == null || data.extras == null) {
+     currentOp.response.status = false
+     currentOp.response.message = mutableMapOf(
+             "status" to if (resultCode == Activity.RESULT_CANCELED) "canceled" else "failed",
+             "errors" to "No result data received (resultCode: $resultCode)"
+     )
+     currentOp.flutterResult()
+     operations.remove(currentOp.response.methodName)
+     return true
+   }
+
+   when (task) {
+     ZettleTask.REQUEST_PAYMENT -> {
+       when (val zettleResult: ZettleResult? = data.zettleResult()) {
+         is ZettleResult.Completed<*> -> {
+           val paymentResult: CardPaymentResult.Completed = CardReaderAction.fromPaymentResult(zettleResult)
+           currentOp.response.status = true
+           currentOp.response.message = mutableMapOf(
+                   "status" to "completed",
+                   "amount" to paymentResult.payload.amount,
+                   "gratuityAmount" to paymentResult.payload.gratuityAmount,
+                   "cardType" to paymentResult.payload.cardType,
+                   "cardPaymentEntryMode" to paymentResult.payload.cardPaymentEntryMode,
+                   "cardholderVerificationMethod" to paymentResult.payload.cardholderVerificationMethod,
+                   "tsi" to paymentResult.payload.tsi,
+                   "tvr" to paymentResult.payload.tvr,
+                   "applicationIdentifier" to paymentResult.payload.applicationIdentifier,
+                   "cardIssuingBank" to paymentResult.payload.cardIssuingBank,
+                   "maskedPan" to paymentResult.payload.maskedPan,
+                   "panHash" to paymentResult.payload.panHash,
+                   "applicationName" to paymentResult.payload.applicationName,
+                   "authorizationCode" to paymentResult.payload.authorizationCode,
+                   "installmentAmount" to paymentResult.payload.installmentAmount,
+                   "nrOfInstallments" to paymentResult.payload.nrOfInstallments,
+                   "mxFiid" to paymentResult.payload.mxFiid,
+                   "mxCardType" to paymentResult.payload.mxCardType,
+                   "reference" to paymentResult.payload.reference?.id,
+           )
+         }
+         is ZettleResult.Cancelled -> {
+           currentOp.response.status = false
+           currentOp.response.message = mutableMapOf(
+                   "status" to "canceled"
+           )
+         }
+         is ZettleResult.Failed -> {
+           currentOp.response.status = false
+           currentOp.response.message = mutableMapOf(
+                   "status" to "failed",
+                   "reason" to zettleResult.reason::class.simpleName,
+                   "errors" to zettleResult.reason.toString(),
+           )
+         }
+         else -> {
+           currentOp.response.status = false
+           currentOp.response.message = mutableMapOf(
+                   "status" to "failed",
+                   "errors" to "Unknown result type"
+           )
+         }
+       }
+       currentOp.flutterResult()
+       operations.remove(currentOp.response.methodName)
+     }
+     ZettleTask.REQUEST_REFUND -> {
+       when (val zettleResult = data.zettleResult()) {
+         is ZettleResult.Completed<*> -> {
+           currentOp.response.status = true
+           val refund: RefundResult.Completed = CardReaderAction.fromRefundResult(zettleResult)
+           currentOp.response.message = mutableMapOf(
+                   "status" to "completed",
+                   "originalAmount" to refund.payload.originalAmount,
+                   "refundedAmount" to refund.payload.refundedAmount,
+                   "cardType" to refund.payload.cardType,
+                   "maskedPan" to refund.payload.maskedPan,
+                   "cardPaymentUUID" to refund.payload.cardPaymentUUID,
+           )
+         }
+         is ZettleResult.Cancelled -> {
+           currentOp.response.status = false
+           currentOp.response.message = mutableMapOf(
+                   "status" to "canceled"
+           )
+         }
+         is ZettleResult.Failed -> {
+           currentOp.response.status = false
+           currentOp.response.message = mutableMapOf(
+                   "status" to "failed",
+                   "reason" to zettleResult.reason::class.simpleName,
+                   "errors" to zettleResult.reason.toString(),
+           )
+         }
+         else -> {
+           currentOp.response.status = false
+           currentOp.response.message = mutableMapOf(
+                   "status" to "failed",
+                   "errors" to "Unknown result type"
+           )
+         }
+       }
+       currentOp.flutterResult()
+       operations.remove(currentOp.response.methodName)
+     }
+     else -> {}
+   }
+   return true
  }
 }
 

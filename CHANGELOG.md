@@ -11,6 +11,21 @@
 * Update widget tests for the new example app UI
 * Update README prerequisites to match actual minimum versions
 
+## 0.2.15
+
+* Bump Zettle SDK version to 2.42.5
+* Fix deprecated APIs in Android plugin (replace `ActivityCompat.startActivityForResult`, remove unsafe `FlutterActivity` cast)
+* Fix deprecated APIs and improve safety in iOS plugin (replace deprecated `UIApplication.shared.keyWindow`, remove force unwraps)
+* Fix incorrect field labels in refund response `toString()`
+* Remove deprecated `package` attribute from AndroidManifest files
+* Handle non-OK result codes and Settings task in Android `onActivityResult`
+* Include failure reason and error details in payment and refund failed results
+* Fix authState observer not registering due to failed `AppCompatActivity` cast
+* Remove authState observer on plugin detachment to prevent leaks
+* Handle Settings and cancellation flows before null-data guard in `onActivityResult`
+* Configure example app via environment variables (no local file edits required)
+* Update README testing docs with environment variable setup
+
 ## 0.2.12
 
 * Bump zettle SDK version 2.24.2

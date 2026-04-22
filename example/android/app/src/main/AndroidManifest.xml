@@ -4,7 +4,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name=".MainActivity"
+            android:name="com.ovatu.zettle_example.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
@@ -32,8 +32,8 @@
             android:taskAffinity="@string/oauth_activity_task_affinity" >
             <intent-filter>
                 <data
-                    android:host="login.callback"
-                    android:scheme="ovatu-next" />
+                    android:host="${redirectHost}"
+                    android:scheme="${redirectScheme}" />
 
                 <action android:name="android.intent.action.VIEW" />
 

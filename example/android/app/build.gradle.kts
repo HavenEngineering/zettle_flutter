@@ -20,14 +20,17 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.ovatu.zettle_example"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        applicationId = providers.environmentVariable("ZETTLE_APP_ID").orNull
+            ?: "com.ovatu.zettle_example"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        val redirectScheme = providers.environmentVariable("ZETTLE_REDIRECT_SCHEME").orNull ?: "your-scheme"
+        val redirectHost = providers.environmentVariable("ZETTLE_REDIRECT_HOST").orNull ?: "your-host"
+        manifestPlaceholders["redirectScheme"] = redirectScheme
+        manifestPlaceholders["redirectHost"] = redirectHost
     }
 
     buildTypes {
