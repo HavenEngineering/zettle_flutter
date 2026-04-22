@@ -92,84 +92,87 @@ class _ZettleExamplePageState extends State<ZettleExamplePage> {
   }
 
   Future<void> _init() => _runAction('init', () async {
-    final iosClientId = _iosClientIdController.text.trim();
-    final androidClientId = _androidClientIdController.text.trim();
-    final redirectUrl = _redirectUrlController.text.trim();
+        final iosClientId = _iosClientIdController.text.trim();
+        final androidClientId = _androidClientIdController.text.trim();
+        final redirectUrl = _redirectUrlController.text.trim();
 
-    if (iosClientId.isEmpty || androidClientId.isEmpty || redirectUrl.isEmpty) {
-      _log('init', 'All credential fields are required', isError: true);
-      return;
-    }
+        if (iosClientId.isEmpty ||
+            androidClientId.isEmpty ||
+            redirectUrl.isEmpty) {
+          _log('init', 'All credential fields are required', isError: true);
+          return;
+        }
 
-    final response = await Zettle.init(
-      iosClientId,
-      androidClientId,
-      redirectUrl,
-    );
-    _isInitialized = response.status;
-    _log('init', response.toString());
-  });
+        final response = await Zettle.init(
+          iosClientId,
+          androidClientId,
+          redirectUrl,
+        );
+        _isInitialized = response.status;
+        _log('init', response.toString());
+      });
 
   Future<void> _login() => _runAction('login', () async {
-    final response = await Zettle.login();
-    _isLoggedIn = response.status;
-    _log('login', response.toString());
-  });
+        final response = await Zettle.login();
+        _isLoggedIn = response.status;
+        _log('login', response.toString());
+      });
 
   Future<void> _logout() => _runAction('logout', () async {
-    final response = await Zettle.logout();
-    _isLoggedIn = response.status;
-    _log('logout', response.toString());
-  });
+        final response = await Zettle.logout();
+        _isLoggedIn = response.status;
+        _log('logout', response.toString());
+      });
 
   Future<void> _checkLoggedIn() => _runAction('loggedIn', () async {
-    final response = await Zettle.loggedIn();
-    _isLoggedIn = response.status;
-    _log('loggedIn', response.toString());
-  });
+        final response = await Zettle.loggedIn();
+        _isLoggedIn = response.status;
+        _log('loggedIn', response.toString());
+      });
 
   Future<void> _requestPayment() => _runAction('payment', () async {
-    final amount = double.tryParse(_amountController.text.trim());
-    if (amount == null || amount <= 0) {
-      _log('payment', 'Enter a valid amount', isError: true);
-      return;
-    }
+        final amount = double.tryParse(_amountController.text.trim());
+        if (amount == null || amount <= 0) {
+          _log('payment', 'Enter a valid amount', isError: true);
+          return;
+        }
 
-    final reference = _uuid.v4();
-    final response = await Zettle.requestPayment(
-      ZettlePaymentRequest(
-        amount: amount,
-        reference: reference,
-        enableLogin: _enableLogin,
-        enableTipping: _enableTipping,
-        enableInstalments: _enableInstalments,
-      ),
-    );
+        final reference = _uuid.v4();
+        final response = await Zettle.requestPayment(
+          ZettlePaymentRequest(
+            amount: amount,
+            reference: reference,
+            enableLogin: _enableLogin,
+            enableTipping: _enableTipping,
+            enableInstalments: _enableInstalments,
+          ),
+        );
 
-    if (response.status == ZettlePluginPaymentStatus.completed) {
-      _lastPaymentReference = response.reference ?? reference;
-      _refundReferenceController.text = _lastPaymentReference!;
-      _refundAmountController.text = amount.toStringAsFixed(2);
-    }
+        if (response.status == ZettlePluginPaymentStatus.completed) {
+          _lastPaymentReference = response.reference ?? reference;
+          _refundReferenceController.text = _lastPaymentReference!;
+          _refundAmountController.text = amount.toStringAsFixed(2);
+        }
 
-    _log('payment', response.toString());
-  });
+        _log('payment', response.toString());
+      });
 
   Future<void> _requestRefund() => _runAction('refund', () async {
-    final ref = _refundReferenceController.text.trim();
-    if (ref.isEmpty) {
-      _log('refund', 'Payment reference is required', isError: true);
-      return;
-    }
+        final ref = _refundReferenceController.text.trim();
+        if (ref.isEmpty) {
+          _log('refund', 'Payment reference is required', isError: true);
+          return;
+        }
 
-    final refundAmount = double.tryParse(_refundAmountController.text.trim());
+        final refundAmount =
+            double.tryParse(_refundAmountController.text.trim());
 
-    final response = await Zettle.requestRefund(
-      ZettleRefundRequest(reference: ref, refundAmount: refundAmount),
-    );
+        final response = await Zettle.requestRefund(
+          ZettleRefundRequest(reference: ref, refundAmount: refundAmount),
+        );
 
-    _log('refund', response.toString());
-  });
+        _log('refund', response.toString());
+      });
 
   void _showSettings() {
     try {
@@ -232,8 +235,8 @@ class _ZettleExamplePageState extends State<ZettleExamplePage> {
                   Text(
                     _isInitialized
                         ? (_isLoggedIn
-                              ? 'SDK ready & logged in'
-                              : 'SDK initialized (not logged in)')
+                            ? 'SDK ready & logged in'
+                            : 'SDK initialized (not logged in)')
                         : 'SDK not initialized',
                     style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
@@ -304,9 +307,8 @@ class _ZettleExamplePageState extends State<ZettleExamplePage> {
               const SizedBox(width: 8),
               Expanded(
                 child: TextButton.icon(
-                  onPressed: !_isInitialized || _loading
-                      ? null
-                      : _checkLoggedIn,
+                  onPressed:
+                      !_isInitialized || _loading ? null : _checkLoggedIn,
                   icon: const Icon(Icons.person_search),
                   label: const Text('Status'),
                 ),
@@ -461,8 +463,7 @@ class _LogTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final time =
-        '${entry.timestamp.hour.toString().padLeft(2, '0')}:'
+    final time = '${entry.timestamp.hour.toString().padLeft(2, '0')}:'
         '${entry.timestamp.minute.toString().padLeft(2, '0')}:'
         '${entry.timestamp.second.toString().padLeft(2, '0')}';
 
