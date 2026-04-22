@@ -1,4 +1,4 @@
-## 0.3.0
+## 0.3.1
 
 * Bump Flutter SDK minimum to 3.41.4
 * Raise iOS deployment target to 16.0
