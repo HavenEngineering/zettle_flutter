@@ -1,6 +1,6 @@
 ## 0.3.2
 
-* Bump Zettle SDK version to 2.42.6
+* Bump Zettle Android SDK version to 2.42.6
 
 ## 0.3.1
 
