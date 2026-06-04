@@ -29,7 +29,7 @@
                 "ZETTLE_REDIRECT_SCHEME": "teams-debug-app",
                 "ZETTLE_REDIRECT_HOST": "login"
             },
-            "args": [
+            "toolArgs": [
                 "--dart-define=ZETTLE_IOS_CLIENT_ID=0e8d6277-a459-47af-93f3-3dfbae7c9d6b",
                 "--dart-define=ZETTLE_ANDROID_CLIENT_ID=0e8d6277-a459-47af-93f3-3dfbae7c9d6b",
                 "--dart-define=ZETTLE_REDIRECT_URL=teams-debug-app://login"

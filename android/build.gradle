@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.ovatu.zettle'
-version '0.3.1'
+version '0.3.2'
 
 rootProject.allprojects {
     repositories {
@@ -44,8 +44,8 @@ android {
 
 dependencies {
     // Core always needed
-    implementation "com.zettle.sdk:core:2.42.5"
+    implementation "com.zettle.sdk:core:2.42.6"
     // For Card Reader Payments
-    implementation "com.zettle.sdk.feature.cardreader:ui:2.42.5"
+    implementation "com.zettle.sdk.feature.cardreader:ui:2.42.6"
     implementation "androidx.lifecycle:lifecycle-process:2.8.7"
 }
