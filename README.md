@@ -7,16 +7,12 @@ A Flutter wrapper for the [Zettle POS SDK](https://developer.zettle.com/) on And
 ## Prerequisites
 
 1. A [Zettle developer account](https://developer.zettle.com/).
-2. iOS 12.0 or higher.
+2. iOS 16.0 or higher.
 3. Android minSdkVersion 23 or higher.
 
 ## Installing
 
 Add zettle to your `pubspec.yaml`:
-
-1) Registered for a Zettle developer account via [Zettle](https://developer.zettle.com/).
-2) Deployment Target iOS 16.0 or higher.
-3) Android minSdkVersion 23 or higher.
 
 ```dart
 import 'package:zettle/zettle.dart';
