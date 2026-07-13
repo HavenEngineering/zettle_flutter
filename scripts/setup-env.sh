@@ -27,6 +27,11 @@ fi
 # Read the currently-exported value so re-runs can offer it as the default.
 current() { printf '%s' "${!1:-}"; }
 
+# Shell-escape a value for safe embedding in the profile. printf %q emits a
+# form that reproduces the exact literal when the profile is sourced, so spaces,
+# metacharacters, or $(...) can never execute or mangle the file.
+shell_quote() { printf '%q' "$1"; }
+
 # prompt VAR "description" "fallback-default"
 prompt() {
   local var="$1" desc="$2" fallback="$3" cur shown reply
@@ -52,10 +57,10 @@ fi
 
 block="$(cat <<EOF
 $BEGIN_MARKER
-export GITHUB_TOKEN=$github_token
-export ZETTLE_APP_ID=$app_id
-export ZETTLE_REDIRECT_SCHEME=$redirect_scheme
-export ZETTLE_REDIRECT_HOST=$redirect_host
+export GITHUB_TOKEN=$(shell_quote "$github_token")
+export ZETTLE_APP_ID=$(shell_quote "$app_id")
+export ZETTLE_REDIRECT_SCHEME=$(shell_quote "$redirect_scheme")
+export ZETTLE_REDIRECT_HOST=$(shell_quote "$redirect_host")
 $END_MARKER
 EOF
 )"
