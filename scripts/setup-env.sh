@@ -67,7 +67,15 @@ EOF
 
 touch "$profile"
 
-if grep -qF "$BEGIN_MARKER" "$profile"; then
+# Count markers by exact line (-x) so a substring in an unrelated line never
+# triggers the replace path, and awk's exact-line matching stays consistent.
+begin_count="$(grep -cxF "$BEGIN_MARKER" "$profile" || true)"
+end_count="$(grep -cxF "$END_MARKER" "$profile" || true)"
+
+if [ "$begin_count" = "0" ] && [ "$end_count" = "0" ]; then
+  printf '\n%s\n' "$block" >> "$profile"
+  echo "Appended block to $profile"
+elif [ "$begin_count" = "1" ] && [ "$end_count" = "1" ]; then
   # Replace existing managed block, preserving everything else.
   tmp="$(mktemp)"
   awk -v b="$BEGIN_MARKER" -v e="$END_MARKER" '
@@ -79,8 +87,10 @@ if grep -qF "$BEGIN_MARKER" "$profile"; then
   mv "$tmp" "$profile"
   echo "Updated existing block in $profile"
 else
-  printf '\n%s\n' "$block" >> "$profile"
-  echo "Appended block to $profile"
+  echo "error: malformed managed block in $profile" \
+       "(found $begin_count begin marker(s), $end_count end marker(s))." >&2
+  echo "Fix or remove the block manually, then re-run." >&2
+  exit 1
 fi
 
 echo
