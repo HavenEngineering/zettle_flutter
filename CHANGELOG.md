@@ -1,3 +1,7 @@
+## 0.3.4
+
+* Bump Flutter SDK minimum to 3.44.6
+
 ## 0.3.3
 
 * Bump Zettle Android SDK version to 2.52.0
