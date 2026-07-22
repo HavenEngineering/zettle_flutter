@@ -1,6 +1,7 @@
 ## 0.3.4
 
 * Bump Flutter SDK minimum to 3.44.6
+* Bump Dart SDK minimum to 3.12.0
 
 ## 0.3.3
 
