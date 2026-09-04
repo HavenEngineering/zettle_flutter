@@ -1,9 +1,11 @@
 val githubToken: String = providers.environmentVariable("GITHUB_TOKEN").orNull
+    ?: providers.gradleProperty("GITHUB_TOKEN").orNull
     ?: throw GradleException(
-        "GITHUB_TOKEN environment variable is not set. " +
-        "A GitHub personal access token with read:packages scope is required " +
-        "to resolve the Zettle SDK from GitHub Packages. " +
-        "See https://github.com/iZettle/sdk-android for details."
+        "GITHUB_TOKEN is not set. " +
+        "Provide a GitHub personal access token with read:packages scope " +
+        "either as an environment variable or as a Gradle property " +
+        "(e.g. in ~/.gradle/gradle.properties) to resolve the Zettle SDK " +
+        "from GitHub Packages. See https://github.com/iZettle/sdk-android for details."
     )
 
 allprojects {
