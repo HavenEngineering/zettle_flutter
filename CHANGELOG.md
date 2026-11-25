@@ -1,6 +1,8 @@
 ## 0.3.6
 
 * Bump Zettle Android SDK version to 2.66.3
+* Android apps must now compile against SDK 36 or higher (Flutter's default
+  `flutter.compileSdkVersion` already is); raise plugin `compileSdk` to 36
 * Android apps must now exclude `META-INF/versions/9/OSGI-INF/MANIFEST.MF` in
   their `packaging` block (see README, Android setup)
 * Raise the example app's Gradle heap to 4 GB
