@@ -9,8 +9,10 @@ import com.zettle.sdk.commons.state.StateObserver
 import com.zettle.sdk.config
 import com.zettle.sdk.commons.ext.state.toLiveData
 import com.zettle.sdk.core.auth.User
-import com.zettle.sdk.feature.cardreader.payment.TippingStyle
+import com.zettle.sdk.feature.cardreader.payment.PayPalReaderTippingStyle
+import com.zettle.sdk.feature.cardreader.payment.TippingConfiguration
 import com.zettle.sdk.feature.cardreader.payment.TransactionReference
+import com.zettle.sdk.feature.cardreader.payment.ZettleReaderTippingStyle
 import com.zettle.sdk.feature.cardreader.payment.refunds.RefundFailureReason
 import com.zettle.sdk.feature.cardreader.payment.refunds.RetrieveCardPaymentFailureReason
 import com.zettle.sdk.feature.cardreader.ui.payment.CardPaymentActivity
@@ -18,6 +20,7 @@ import com.zettle.sdk.feature.cardreader.ui.payment.CardPaymentResult
 import com.zettle.sdk.feature.cardreader.ui.CardReaderAction
 import com.zettle.sdk.feature.cardreader.ui.refunds.RefundResult
 import com.zettle.sdk.feature.cardreader.ui.CardReaderFeature
+import com.zettle.sdk.feature.cardreader.ui.ZettlePaymentProcessingStrategy
 import com.zettle.sdk.feature.cardreader.payment.refunds.CardPaymentPayload
 import com.zettle.sdk.features.refund
 import com.zettle.sdk.features.charge
@@ -203,7 +206,20 @@ class ZettlePlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegis
 
     val internalUniqueTraceId = args["reference"] as String
     val reference = TransactionReference.Builder(internalUniqueTraceId).build()
-    val action = CardReaderAction.Payment(reference, (((args["amount"] as Double) * 100).toInt()).toLong(), TippingStyle.None)
+    val action = CardReaderAction.Payment(
+      reference = reference,
+      amount = (((args["amount"] as Double) * 100).toInt()).toLong(),
+      // Offline card payments (beta) are not supported by this plugin yet.
+      processingStrategy = ZettlePaymentProcessingStrategy.OnlineOnly,
+      // Explicit "no tipping", matching the previous TippingStyle.None. A null
+      // configuration would not be equivalent.
+      tippingConfiguration = TippingConfiguration(
+        ZettleReaderTippingStyle.None,
+        PayPalReaderTippingStyle.None,
+      ),
+      // Same as the previous constructor's default.
+      enableInstallments = true,
+    )
     val intent = action.charge(activity)
     activity.startActivityForResult(intent, ZettleTask.REQUEST_PAYMENT.code)
   }

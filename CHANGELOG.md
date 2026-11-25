@@ -6,6 +6,9 @@
 * Android apps must now exclude `META-INF/versions/9/OSGI-INF/MANIFEST.MF` in
   their `packaging` block (see README, Android setup)
 * Raise the example app's Gradle heap to 4 GB
+* Android: build card payments with the non-deprecated `CardReaderAction.Payment`
+  constructor, passing `OnlineOnly` explicitly. No behaviour change: still no
+  tipping, installments still enabled
 
 ## 0.3.5
 
