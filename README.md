@@ -41,6 +41,18 @@ allprojects {
 }
 ```
 
+Exclude a duplicate OSGi manifest in your **app** `build.gradle`. Zettle SDK 2.66+ pulls in OkHttp 5, which clashes with `jspecify` during resource merging:
+
+```groovy
+android {
+    packaging {
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
+}
+```
+
 Add the OAuth callback activity to your `AndroidManifest.xml`:
 
 ```xml

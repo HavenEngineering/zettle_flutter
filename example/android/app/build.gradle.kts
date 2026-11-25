@@ -40,6 +40,14 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    packaging {
+        resources {
+            // Zettle SDK 2.66+ pulls in OkHttp 5 logging-interceptor, which ships
+            // the same OSGi manifest as jspecify. Android does not use it.
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
 }
 
 flutter {

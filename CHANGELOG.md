@@ -1,3 +1,10 @@
+## 0.3.6
+
+* Bump Zettle Android SDK version to 2.66.3
+* Android apps must now exclude `META-INF/versions/9/OSGI-INF/MANIFEST.MF` in
+  their `packaging` block (see README, Android setup)
+* Raise the example app's Gradle heap to 4 GB
+
 ## 0.3.5
 
 * Bump Zettle Android SDK version to 2.52.1
