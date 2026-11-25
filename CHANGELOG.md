@@ -1,4 +1,4 @@
-## 0.3.6
+## 0.4.0
 
 * Bump Zettle Android SDK version to 2.66.3
 * Android apps must now compile against SDK 36 or higher (Flutter's default
