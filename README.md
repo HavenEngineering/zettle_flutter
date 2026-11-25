@@ -8,7 +8,7 @@ A Flutter wrapper for the [Zettle POS SDK](https://developer.zettle.com/) on And
 
 1. A [Zettle developer account](https://developer.zettle.com/).
 2. iOS 16.0 or higher.
-3. Android minSdkVersion 23 or higher.
+3. Android minSdkVersion 23 or higher, compileSdk 36 or higher.
 
 ## Installing
 
@@ -36,6 +36,18 @@ allprojects {
             authentication {
                 header(HttpHeaderAuthentication)
             }
+        }
+    }
+}
+```
+
+Exclude a duplicate OSGi manifest in your **app** `build.gradle` or `build.gradle.kts` (the snippet is the same in both). Zettle SDK 2.66+ pulls in OkHttp 5, which clashes with `jspecify` during resource merging:
+
+```groovy
+android {
+    packaging {
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
         }
     }
 }

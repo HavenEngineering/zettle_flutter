@@ -1,3 +1,15 @@
+## 0.4.0
+
+* Bump Zettle Android SDK version to 2.66.3
+* Android apps must now compile against SDK 36 or higher (Flutter's default
+  `flutter.compileSdkVersion` already is); raise plugin `compileSdk` to 36
+* Android apps must now exclude `META-INF/versions/9/OSGI-INF/MANIFEST.MF` in
+  their `packaging` block (see README, Android setup)
+* Raise the example app's Gradle heap to 4 GB
+* Android: build card payments with the non-deprecated `CardReaderAction.Payment`
+  constructor, passing `OnlineOnly` explicitly. No behaviour change: still no
+  tipping, installments still enabled
+
 ## 0.3.5
 
 * Bump Zettle Android SDK version to 2.52.1
